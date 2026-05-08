@@ -2,71 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Closest Aircraft Tracker</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-  <!--
-    Humanity invented flight.
-    Then invented APIs to watch flight.
-    Then invented JavaScript to make the watching slightly more dramatic.
-  -->
+  <title>Closest Aircraft Tracker</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       background:
-        radial-gradient(circle at top, rgba(59,130,246,0.15), transparent 30%),
+        radial-gradient(circle at top, rgba(14,165,233,0.15), transparent 30%),
         linear-gradient(to bottom, #020617, #0f172a);
       min-height: 100vh;
     }
 
     .glass {
-      backdrop-filter: blur(14px);
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-    }
-
-    .pulse-dot {
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.3);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .plane-float {
-      animation: planeFloat 6s ease-in-out infinite;
+      animation: float 5s ease-in-out infinite;
     }
 
-    @keyframes planeFloat {
+    @keyframes float {
       0% {
         transform: translateY(0px) rotate(-2deg);
       }
+
       50% {
-        transform: translateY(-6px) rotate(2deg);
+        transform: translateY(-8px) rotate(2deg);
       }
+
       100% {
         transform: translateY(0px) rotate(-2deg);
       }
     }
 
-    .loading-spin {
+    .spin {
       animation: spin 1s linear infinite;
     }
 
@@ -74,6 +51,7 @@
       from {
         transform: rotate(0deg);
       }
+
       to {
         transform: rotate(360deg);
       }
@@ -86,40 +64,39 @@
       background-image:
         linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
+      background-size: 28px 28px;
       pointer-events: none;
-      z-index: 0;
     }
   </style>
 </head>
 
-<body class="text-slate-100 overflow-x-hidden">
+<body class="text-white overflow-x-hidden">
 
   <div class="relative min-h-screen grid-overlay">
 
-    <!-- Decorative Blur -->
-    <div class="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-3xl rounded-full"></div>
+    <div class="absolute top-0 left-0 w-80 h-80 bg-cyan-500/20 blur-3xl rounded-full"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 blur-3xl rounded-full"></div>
 
-    <main class="relative z-10 max-w-3xl mx-auto px-4 py-8 sm:py-10">
+    <main class="relative z-10 max-w-3xl mx-auto px-4 py-8">
 
       <!-- Header -->
-      <header class="mb-8">
+      <section class="mb-8">
 
         <div class="flex items-center gap-3 mb-4">
 
-          <div class="w-4 h-4 rounded-full bg-emerald-400 pulse-dot"></div>
+          <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
 
           <span class="uppercase tracking-[0.3em] text-xs text-slate-400 font-semibold">
-            Live ADS-B Aircraft Monitor
+            ADSB.lol Live Tracker
           </span>
 
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
 
           <div>
-            <h1 class="text-4xl sm:text-5xl font-black tracking-tight leading-none">
+
+            <h1 class="text-5xl font-black tracking-tight">
               Closest
               <span class="text-cyan-400">
                 Aircraft
@@ -127,85 +104,96 @@
             </h1>
 
             <p class="mt-4 text-slate-300 max-w-xl leading-relaxed">
-              Finds the nearest aircraft to your live GPS position using the ADSB.lol API.
-              Because apparently humans decided the sky also needed telemetry dashboards.
+              Finds the nearest aircraft to your live GPS position using the ADSB.lol V2 API.
+              Humanity really built a planet-sized machine for watching aluminum tubes travel through the sky.
             </p>
+
           </div>
 
-          <div class="plane-float">
-            <div class="text-7xl">
-              ✈️
-            </div>
+          <div class="text-7xl plane-float">
+            ✈️
           </div>
 
         </div>
-      </header>
 
-      <!-- Refresh Button -->
-      <div class="mb-8">
+      </section>
 
-        <button
-          id="refreshBtn"
-          class="
-            w-full
-            glass
-            hover:bg-slate-800/70
-            active:scale-[0.99]
-            transition
-            duration-200
-            rounded-3xl
-            py-5
-            px-6
-            text-lg
-            font-bold
-            shadow-2xl
-            border border-cyan-400/20
-            flex items-center justify-center gap-4
-          "
+      <!-- Refresh -->
+      <button
+        id="refreshBtn"
+        class="
+          w-full
+          glass
+          rounded-3xl
+          py-5
+          px-6
+          mb-8
+          font-black
+          text-lg
+          hover:bg-slate-800/70
+          transition
+          active:scale-[0.99]
+          flex
+          items-center
+          justify-center
+          gap-4
+          shadow-2xl
+        "
+      >
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
         >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4 4v5h5"
+          />
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 4v5h.582M20 20v-5h-.581M5.64 9A8 8 0 0119 8.582M18.36 15A8 8 0 015 15.418"
-            />
-          </svg>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M20 20v-5h-5"
+          />
 
-          Refresh Closest Aircraft
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5.64 9A8 8 0 0119 8.58"
+          />
 
-        </button>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M18.36 15A8 8 0 015 15.42"
+          />
+        </svg>
 
-      </div>
+        Refresh Aircraft
+
+      </button>
 
       <!-- Status -->
       <section
         id="statusCard"
-        class="
-          glass
-          rounded-3xl
-          p-6
-          mb-8
-          shadow-xl
-        "
+        class="glass rounded-3xl p-6 mb-8"
       >
 
         <div class="flex items-center gap-4">
 
           <div
-            id="statusSpinner"
+            id="spinner"
             class="
-              loading-spin
-              w-8 h-8
+              spin
+              w-8
+              h-8
               border-4
-              border-cyan-400/20
+              border-cyan-500/20
               border-t-cyan-400
               rounded-full
             "
@@ -215,16 +203,16 @@
 
             <h2
               id="statusTitle"
-              class="font-bold text-xl"
+              class="text-xl font-bold"
             >
-              Initializing Tracker
+              Initializing
             </h2>
 
             <p
               id="statusText"
               class="text-slate-300 mt-1"
             >
-              Waiting for GPS permission and aircraft data...
+              Waiting for GPS permission...
             </p>
 
           </div>
@@ -235,84 +223,68 @@
 
       <!-- Aircraft Card -->
       <section
-        id="aircraftSection"
+        id="aircraftCard"
         class="hidden"
       >
 
-        <div
-          class="
-            glass
-            rounded-[2rem]
-            overflow-hidden
-            shadow-2xl
-            border border-cyan-400/10
-          "
-        >
+        <div class="glass rounded-[2rem] overflow-hidden shadow-2xl">
 
-          <!-- Top Banner -->
+          <!-- Banner -->
           <div
             class="
               bg-gradient-to-r
               from-cyan-500/10
-              via-sky-500/10
               to-blue-500/10
               p-6
-              border-b border-white/10
+              border-b
+              border-white/10
             "
           >
 
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex justify-between items-start gap-4 flex-wrap">
 
               <div>
 
-                <div class="uppercase tracking-[0.25em] text-xs text-cyan-300 font-semibold mb-3">
-                  Closest Aircraft Detected
+                <div class="uppercase tracking-[0.3em] text-xs text-cyan-300 font-semibold mb-3">
+                  Closest Aircraft
                 </div>
 
                 <h2
-                  id="flightName"
-                  class="
-                    text-4xl
-                    font-black
-                    tracking-tight
-                    break-words
-                  "
+                  id="flight"
+                  class="text-4xl font-black break-words"
                 >
                   Unknown
                 </h2>
 
                 <p
-                  id="aircraftType"
-                  class="
-                    text-slate-300
-                    mt-2
-                    text-lg
-                  "
+                  id="type"
+                  class="mt-2 text-slate-300 text-lg"
                 >
-                  Aircraft Type
+                  Unknown Type
                 </p>
 
               </div>
 
               <div
                 class="
-                  text-right
                   bg-slate-950/40
                   rounded-2xl
-                  px-4
-                  py-3
-                  border border-white/10
-                  min-w-[110px]
+                  px-5
+                  py-4
+                  min-w-[120px]
+                  border
+                  border-white/10
+                  text-right
                 "
               >
 
-                <div class="text-xs uppercase tracking-widest text-slate-400 mb-1">
+                <div class="text-xs uppercase tracking-wider text-slate-400 mb-1">
                   Distance
                 </div>
 
                 <div
-                  id="distanceValue"
-                  class="text-2xl font-black text-cyan-300"
+                  id="distance"
+                  class="text-3xl font-black text-cyan-300"
                 >
                   --
                 </div>
@@ -323,17 +295,17 @@
 
           </div>
 
-          <!-- Stats -->
+          <!-- Data -->
           <div class="p-6">
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
               <!-- Altitude -->
-              <div class="rounded-2xl bg-slate-950/40 p-5 border border-white/5">
+              <div class="bg-slate-950/40 rounded-2xl p-5 border border-white/5">
 
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex justify-between items-center mb-3">
 
-                  <span class="text-slate-400 uppercase text-xs tracking-wider">
+                  <span class="uppercase text-xs tracking-wider text-slate-400">
                     Altitude
                   </span>
 
@@ -344,24 +316,20 @@
                 </div>
 
                 <div
-                  id="altitudeValue"
+                  id="altitude"
                   class="text-3xl font-black"
                 >
                   --
                 </div>
 
-                <div class="text-slate-400 mt-1">
-                  Feet above sea level
-                </div>
-
               </div>
 
               <!-- Speed -->
-              <div class="rounded-2xl bg-slate-950/40 p-5 border border-white/5">
+              <div class="bg-slate-950/40 rounded-2xl p-5 border border-white/5">
 
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex justify-between items-center mb-3">
 
-                  <span class="text-slate-400 uppercase text-xs tracking-wider">
+                  <span class="uppercase text-xs tracking-wider text-slate-400">
                     Ground Speed
                   </span>
 
@@ -372,24 +340,20 @@
                 </div>
 
                 <div
-                  id="speedValue"
+                  id="speed"
                   class="text-3xl font-black"
                 >
                   --
                 </div>
 
-                <div class="text-slate-400 mt-1">
-                  Miles per hour
-                </div>
-
               </div>
 
               <!-- Heading -->
-              <div class="rounded-2xl bg-slate-950/40 p-5 border border-white/5">
+              <div class="bg-slate-950/40 rounded-2xl p-5 border border-white/5">
 
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex justify-between items-center mb-3">
 
-                  <span class="text-slate-400 uppercase text-xs tracking-wider">
+                  <span class="uppercase text-xs tracking-wider text-slate-400">
                     Heading
                   </span>
 
@@ -400,24 +364,20 @@
                 </div>
 
                 <div
-                  id="headingValue"
+                  id="heading"
                   class="text-3xl font-black"
                 >
                   --
                 </div>
 
-                <div class="text-slate-400 mt-1">
-                  Compass direction
-                </div>
-
               </div>
 
               <!-- ICAO -->
-              <div class="rounded-2xl bg-slate-950/40 p-5 border border-white/5">
+              <div class="bg-slate-950/40 rounded-2xl p-5 border border-white/5">
 
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex justify-between items-center mb-3">
 
-                  <span class="text-slate-400 uppercase text-xs tracking-wider">
+                  <span class="uppercase text-xs tracking-wider text-slate-400">
                     ICAO Hex
                   </span>
 
@@ -428,19 +388,10 @@
                 </div>
 
                 <div
-                  id="icaoValue"
-                  class="
-                    text-3xl
-                    font-black
-                    break-all
-                    uppercase
-                  "
+                  id="icao"
+                  class="text-3xl font-black uppercase break-all"
                 >
                   --
-                </div>
-
-                <div class="text-slate-400 mt-1">
-                  Aircraft transponder ID
                 </div>
 
               </div>
@@ -448,26 +399,18 @@
             </div>
 
             <!-- Coordinates -->
-            <div
-              class="
-                mt-5
-                rounded-2xl
-                bg-slate-950/40
-                p-5
-                border border-white/5
-              "
-            >
+            <div class="mt-5 bg-slate-950/40 rounded-2xl p-5 border border-white/5">
 
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                 <div>
 
-                  <div class="uppercase tracking-wider text-xs text-slate-400 mb-2">
+                  <div class="uppercase text-xs tracking-wider text-slate-400 mb-2">
                     Aircraft Coordinates
                   </div>
 
                   <div
-                    id="coordsValue"
+                    id="coords"
                     class="font-mono text-lg break-all"
                   >
                     --
@@ -492,7 +435,8 @@
                     py-4
                     rounded-2xl
                     font-bold
-                    border border-cyan-400/20
+                    border
+                    border-cyan-400/20
                     text-cyan-200
                   "
                 >
@@ -512,6 +456,7 @@
                       stroke-linejoin="round"
                       d="M14 3h7m0 0v7m0-7L10 14"
                     />
+
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -531,78 +476,62 @@
 
       </section>
 
-      <!-- Empty State -->
+      <!-- Empty -->
       <section
         id="emptyState"
-        class="
-          hidden
-          glass
-          rounded-3xl
-          p-10
-          text-center
-          shadow-xl
-        "
+        class="hidden glass rounded-3xl p-10 text-center"
       >
 
-        <div class="text-7xl mb-6">
+        <div class="text-7xl mb-5">
           🌌
         </div>
 
-        <h2 class="text-3xl font-black mb-4">
+        <h2 class="text-3xl font-black mb-3">
           No planes found overhead
         </h2>
 
-        <p class="text-slate-300 max-w-lg mx-auto leading-relaxed">
-          Either the skies are temporarily empty, the API returned nothing,
-          or the aircraft are hiding from your surveillance empire.
+        <p class="text-slate-300">
+          The API returned no nearby aircraft.
+          Either the skies are empty or aviation has finally taken a day off.
         </p>
 
       </section>
 
-      <!-- Error State -->
+      <!-- Error -->
       <section
         id="errorState"
-        class="
-          hidden
-          glass
-          rounded-3xl
-          p-10
-          text-center
-          shadow-xl
-          border border-red-500/20
-        "
+        class="hidden glass rounded-3xl p-10 text-center border border-red-500/20"
       >
 
-        <div class="text-7xl mb-6">
+        <div class="text-7xl mb-5">
           ⚠️
         </div>
 
         <h2
           id="errorTitle"
-          class="text-3xl font-black mb-4"
+          class="text-3xl font-black mb-3"
         >
-          Something Went Wrong
+          Error
         </h2>
 
         <p
-          id="errorText"
-          class="text-slate-300 max-w-lg mx-auto leading-relaxed"
+          id="errorMessage"
+          class="text-slate-300"
         >
-          An unexpected error occurred.
+          Something failed.
         </p>
 
       </section>
 
       <!-- Footer -->
-      <footer class="mt-10 text-center text-slate-500 text-sm leading-relaxed">
+      <footer class="mt-10 text-center text-slate-500 text-sm">
 
         <p>
-          Powered by ADS-B aircraft telemetry.
+          Powered by ADSB.lol API v2
         </p>
 
         <p class="mt-2">
-          Tiny metal tube screaming through the atmosphere at 500 mph:
-          perfectly normal civilization behavior.
+          Browser + GPS + aircraft telemetry. A deeply normal sentence in 2026.
         </p>
 
       </footer>
@@ -614,119 +543,125 @@
   <script>
 
     /*
-      ============================
-      Closest Aircraft Tracker
-      ============================
-
-      Single-file SPA.
-      No frameworks.
-      No build tools.
-      No npm apocalypse.
-
-      Just browser APIs and determination.
+      ==========================================
+      DOM
+      ==========================================
     */
 
-    const refreshBtn = document.getElementById("refreshBtn");
+    const refreshBtn =
+      document.getElementById("refreshBtn");
 
-    const statusCard = document.getElementById("statusCard");
-    const statusTitle = document.getElementById("statusTitle");
-    const statusText = document.getElementById("statusText");
-    const statusSpinner = document.getElementById("statusSpinner");
+    const statusTitle =
+      document.getElementById("statusTitle");
 
-    const aircraftSection = document.getElementById("aircraftSection");
-    const emptyState = document.getElementById("emptyState");
-    const errorState = document.getElementById("errorState");
+    const statusText =
+      document.getElementById("statusText");
 
-    const flightName = document.getElementById("flightName");
-    const aircraftType = document.getElementById("aircraftType");
-    const distanceValue = document.getElementById("distanceValue");
-    const altitudeValue = document.getElementById("altitudeValue");
-    const speedValue = document.getElementById("speedValue");
-    const headingValue = document.getElementById("headingValue");
-    const icaoValue = document.getElementById("icaoValue");
-    const coordsValue = document.getElementById("coordsValue");
-    const mapLink = document.getElementById("mapLink");
+    const spinner =
+      document.getElementById("spinner");
 
-    const errorTitle = document.getElementById("errorTitle");
-    const errorText = document.getElementById("errorText");
+    const aircraftCard =
+      document.getElementById("aircraftCard");
 
-    const API_RADIUS_NM = 50;
+    const emptyState =
+      document.getElementById("emptyState");
+
+    const errorState =
+      document.getElementById("errorState");
+
+    const flight =
+      document.getElementById("flight");
+
+    const type =
+      document.getElementById("type");
+
+    const distance =
+      document.getElementById("distance");
+
+    const altitude =
+      document.getElementById("altitude");
+
+    const speed =
+      document.getElementById("speed");
+
+    const heading =
+      document.getElementById("heading");
+
+    const icao =
+      document.getElementById("icao");
+
+    const coords =
+      document.getElementById("coords");
+
+    const mapLink =
+      document.getElementById("mapLink");
+
+    const errorTitle =
+      document.getElementById("errorTitle");
+
+    const errorMessage =
+      document.getElementById("errorMessage");
 
     /*
-      =========================================
-      Utility Functions
-      =========================================
+      ==========================================
+      Helpers
+      ==========================================
     */
 
-    function setLoading(message = "Loading aircraft data...") {
+    function setLoading(message) {
 
-      statusCard.classList.remove("hidden");
+      spinner.classList.remove("hidden");
 
-      statusTitle.textContent = "Tracking Aircraft";
-      statusText.textContent = message;
+      statusTitle.textContent =
+        "Loading";
 
-      statusSpinner.classList.remove("hidden");
+      statusText.textContent =
+        message;
 
-      aircraftSection.classList.add("hidden");
+      aircraftCard.classList.add("hidden");
       emptyState.classList.add("hidden");
       errorState.classList.add("hidden");
 
-      refreshBtn.disabled = true;
-      refreshBtn.classList.add("opacity-70");
-
     }
 
-    function clearLoading() {
+    function stopLoading() {
 
-      statusSpinner.classList.add("hidden");
-
-      refreshBtn.disabled = false;
-      refreshBtn.classList.remove("opacity-70");
+      spinner.classList.add("hidden");
 
     }
 
     function showError(title, message) {
 
-      clearLoading();
+      stopLoading();
 
       errorState.classList.remove("hidden");
 
-      errorTitle.textContent = title;
-      errorText.textContent = message;
+      errorTitle.textContent =
+        title;
 
-      aircraftSection.classList.add("hidden");
-      emptyState.classList.add("hidden");
-
-      statusTitle.textContent = "Error";
-      statusText.textContent = message;
+      errorMessage.textContent =
+        message;
 
     }
 
     function showEmpty() {
 
-      clearLoading();
+      stopLoading();
 
       emptyState.classList.remove("hidden");
 
-      aircraftSection.classList.add("hidden");
-      errorState.classList.add("hidden");
-
-      statusTitle.textContent = "No Aircraft Found";
-      statusText.textContent = "No nearby aircraft were returned by the ADSB.lol API.";
-
     }
 
-    function toCompass(degrees) {
+    function compassDirection(degrees) {
 
       if (
-        degrees === null ||
         degrees === undefined ||
-        isNaN(degrees)
+        degrees === null
       ) {
         return "Unknown";
       }
 
-      const directions = [
+      const dirs = [
         "N",
         "NNE",
         "NE",
@@ -745,18 +680,18 @@
         "NNW"
       ];
 
-      const index = Math.round(degrees / 22.5) % 16;
+      const index =
+        Math.round(degrees / 22.5) % 16;
 
-      return directions[index];
+      return dirs[index];
 
     }
 
     function knotsToMph(knots) {
 
       if (
-        knots === null ||
         knots === undefined ||
-        isNaN(knots)
+        knots === null
       ) {
         return "Unknown";
       }
@@ -765,297 +700,280 @@
 
     }
 
-    function formatAltitude(altitude) {
+    function deg2rad(deg) {
 
-      if (
-        altitude === null ||
-        altitude === undefined ||
-        altitude === "ground"
-      ) {
-        return "Ground";
-      }
-
-      return `${Number(altitude).toLocaleString()} ft`;
+      return deg * (
+        Math.PI / 180
+      );
 
     }
 
-    function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
-
-      /*
-        Haversine Formula.
-        Tiny geometry ritual to calculate how far apart
-        two humans-and-machines coordinates are.
-      */
+    function calculateDistanceMiles(
+      lat1,
+      lon1,
+      lat2,
+      lon2
+    ) {
 
       const R = 3958.8;
 
-      const dLat = degreesToRadians(lat2 - lat1);
-      const dLon = degreesToRadians(lon2 - lon1);
+      const dLat =
+        deg2rad(lat2 - lat1);
+
+      const dLon =
+        deg2rad(lon2 - lon1);
 
       const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(degreesToRadians(lat1)) *
-        Math.cos(degreesToRadians(lat2)) *
+        Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
+
+        Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
 
-      const c = 2 * Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1 - a)
-      );
+      const c =
+        2 * Math.atan2(
+          Math.sqrt(a),
+          Math.sqrt(1 - a)
+        );
 
       return R * c;
 
     }
 
-    function degreesToRadians(degrees) {
-      return degrees * (Math.PI / 180);
-    }
-
-    function sanitizeFlightName(name) {
-
-      if (!name) {
-        return "Unknown Flight";
-      }
-
-      const cleaned = String(name).trim();
-
-      if (!cleaned.length) {
-        return "Unknown Flight";
-      }
-
-      return cleaned;
-
-    }
-
     /*
-      =========================================
+      ==========================================
       GPS
-      =========================================
+      ==========================================
     */
 
-    function getCurrentPosition() {
+    function getLocation() {
 
-      return new Promise((resolve, reject) => {
+      return new Promise(
+        (resolve, reject) => {
 
-        if (!navigator.geolocation) {
+          if (
+            !navigator.geolocation
+          ) {
 
-          reject(
-            new Error(
-              "Geolocation is not supported on this device."
-            )
+            reject(
+              new Error(
+                "Geolocation unsupported"
+              )
+            );
+
+            return;
+
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+            {
+              enableHighAccuracy: true,
+              timeout: 15000,
+              maximumAge: 0
+            }
           );
 
-          return;
         }
-
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            resolve(position);
-          },
-
-          (error) => {
-            reject(error);
-          },
-
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-          }
-        );
-
-      });
+      );
 
     }
 
     /*
-      =========================================
+      ==========================================
       API
-      =========================================
+      ==========================================
     */
 
-    async function fetchClosestAircraft(lat, lon) {
+    async function fetchClosestAircraft(
+      lat,
+      lon
+    ) {
 
-      const endpoint =
-        `https://adsb.lol/v2/closest/${lat}/${lon}/${API_RADIUS_NM}`;
+      const url =
+        `https://api.adsb.lol/v2/closest/${lat}/${lon}/50`;
 
-      const response = await fetch(endpoint);
+      const response =
+        await fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
 
       if (!response.ok) {
+
         throw new Error(
-          `API returned status ${response.status}`
+          `API Error ${response.status}`
         );
+
       }
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
-      return data;
+      console.log(
+        "ADSB Response:",
+        data
+      );
+
+      if (
+        data &&
+        Array.isArray(data.ac)
+      ) {
+
+        return data.ac;
+
+      }
+
+      return [];
 
     }
 
     /*
-      =========================================
-      Render Aircraft
-      =========================================
+      ==========================================
+      Render
+      ==========================================
     */
 
-    function renderAircraft(userLat, userLon, aircraft) {
+    function renderAircraft(
+      userLat,
+      userLon,
+      plane
+    ) {
 
-      clearLoading();
+      stopLoading();
 
-      aircraftSection.classList.remove("hidden");
-      emptyState.classList.add("hidden");
-      errorState.classList.add("hidden");
+      aircraftCard.classList.remove("hidden");
 
-      statusTitle.textContent = "Aircraft Located";
-      statusText.textContent =
-        "Nearest aircraft successfully identified.";
+      const flightName =
+        plane.flight
+          ? plane.flight.trim()
+          : "Unknown Flight";
 
-      const flight =
-        sanitizeFlightName(aircraft.flight);
+      const aircraftType =
+        plane.t || "Unknown";
 
-      const type =
-        aircraft.t || "Unknown Type";
+      const alt =
+        plane.alt_baro === "ground"
+          ? "Ground"
+          : `${Number(
+              plane.alt_baro || 0
+            ).toLocaleString()} ft`;
 
-      const altitude =
-        formatAltitude(aircraft.alt_baro);
+      const mph =
+        knotsToMph(plane.gs);
 
-      const speedMph =
-        knotsToMph(aircraft.gs);
+      const track =
+        plane.track;
 
-      const heading =
-        aircraft.track;
+      const direction =
+        compassDirection(track);
 
-      const headingCompass =
-        toCompass(heading);
-
-      const aircraftLat =
-        aircraft.lat;
-
-      const aircraftLon =
-        aircraft.lon;
-
-      const distance =
+      const dist =
         calculateDistanceMiles(
           userLat,
           userLon,
-          aircraftLat,
-          aircraftLon
+          plane.lat,
+          plane.lon
         );
 
-      const hex =
-        aircraft.hex || "Unknown";
+      flight.textContent =
+        flightName;
 
-      flightName.textContent = flight;
+      type.textContent =
+        `ICAO Type: ${aircraftType}`;
 
-      aircraftType.textContent =
-        `ICAO Type: ${type}`;
+      distance.textContent =
+        `${dist.toFixed(1)} mi`;
 
-      distanceValue.textContent =
-        `${distance.toFixed(1)} mi`;
+      altitude.textContent =
+        alt;
 
-      altitudeValue.textContent =
-        altitude;
-
-      speedValue.textContent =
-        speedMph === "Unknown"
+      speed.textContent =
+        mph === "Unknown"
           ? "Unknown"
-          : `${speedMph} mph`;
+          : `${mph} mph`;
 
-      headingValue.textContent =
-        heading === undefined ||
-        heading === null
+      heading.textContent =
+        track === undefined
           ? "Unknown"
-          : `${headingCompass} – ${String(Math.round(heading)).padStart(3, "0")}°`;
+          : `${direction} – ${String(
+              Math.round(track)
+            ).padStart(3, "0")}°`;
 
-      icaoValue.textContent =
-        hex.toUpperCase();
+      icao.textContent =
+        (plane.hex || "Unknown")
+        .toUpperCase();
 
-      coordsValue.textContent =
-        `${aircraftLat?.toFixed?.(5) ?? "?"}, ${aircraftLon?.toFixed?.(5) ?? "?"}`;
+      coords.textContent =
+        `${plane.lat.toFixed(5)}, ${plane.lon.toFixed(5)}`;
 
       mapLink.href =
-        `https://adsb.lol/?icao=${hex}`;
+        `https://adsb.lol/?icao=${plane.hex}`;
+
+      statusTitle.textContent =
+        "Aircraft Found";
+
+      statusText.textContent =
+        "Nearest aircraft successfully identified.";
 
     }
 
     /*
-      =========================================
-      Main Flow
-      =========================================
+      ==========================================
+      Main
+      ==========================================
     */
 
-    async function refreshAircraft() {
+    async function refreshTracker() {
 
       try {
 
         setLoading(
-          "Requesting GPS permission..."
+          "Requesting GPS location..."
         );
 
         const position =
-          await getCurrentPosition();
+          await getLocation();
 
-        const latitude =
+        const lat =
           position.coords.latitude;
 
-        const longitude =
+        const lon =
           position.coords.longitude;
 
         statusText.textContent =
-          "GPS acquired. Searching nearby aircraft...";
+          "Searching nearby aircraft...";
 
-        const response =
+        const aircraft =
           await fetchClosestAircraft(
-            latitude,
-            longitude
+            lat,
+            lon
           );
 
-        /*
-          ADSB.lol formats can vary slightly.
-          We defensively inspect possible structures.
-        */
-
-        let aircraftList = [];
-
-        if (Array.isArray(response)) {
-
-          aircraftList = response;
-
-        } else if (
-          response &&
-          Array.isArray(response.ac)
+        if (
+          !aircraft.length
         ) {
-
-          aircraftList = response.ac;
-
-        } else if (
-          response &&
-          Array.isArray(response.aircraft)
-        ) {
-
-          aircraftList = response.aircraft;
-
-        }
-
-        if (!aircraftList.length) {
 
           showEmpty();
           return;
 
         }
 
-        const closestAircraft =
-          aircraftList[0];
-
         renderAircraft(
-          latitude,
-          longitude,
-          closestAircraft
+          lat,
+          lon,
+          aircraft[0]
         );
 
-      } catch (error) {
+      }
+
+      catch (error) {
 
         console.error(error);
 
@@ -1064,8 +982,8 @@
         ) {
 
           showError(
-            "Location Permission Denied",
-            "Please enable GPS or location permissions in your browser settings and refresh the page."
+            "GPS Permission Denied",
+            "Please allow location access in your browser settings."
           );
 
           return;
@@ -1078,7 +996,7 @@
 
           showError(
             "Location Unavailable",
-            "Your location could not be determined. Try moving outdoors or checking device GPS settings."
+            "Your device could not determine your location."
           );
 
           return;
@@ -1090,8 +1008,8 @@
         ) {
 
           showError(
-            "Location Timeout",
-            "The GPS request timed out before your location could be acquired."
+            "GPS Timeout",
+            "Location request took too long."
           );
 
           return;
@@ -1099,8 +1017,8 @@
         }
 
         showError(
-          "Aircraft Lookup Failed",
-          "A network or API error occurred while contacting ADSB.lol. Try refreshing again."
+          "API Failure",
+          "Failed to contact ADSB.lol API. Try refreshing again."
         );
 
       }
@@ -1108,29 +1026,25 @@
     }
 
     /*
-      =========================================
-      Event Listeners
-      =========================================
+      ==========================================
+      Events
+      ==========================================
     */
 
     refreshBtn.addEventListener(
       "click",
-      refreshAircraft
+      refreshTracker
     );
 
     /*
-      =========================================
-      Startup
-      =========================================
+      ==========================================
+      Start
+      ==========================================
     */
 
     window.addEventListener(
       "load",
-      () => {
-
-        refreshAircraft();
-
-      }
+      refreshTracker
     );
 
   </script>
